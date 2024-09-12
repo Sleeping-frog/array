@@ -1,17 +1,14 @@
 #pragma once
 #include <exception>
-#include <cstdarg>
+#include <initializer_list>
 
 template<typename T, size_t N>
 class array {
-private:
-	T arr[N];
-
 public:
 
 	array() {}
 
-	array(T arg1, ...);
+	array(std::initializer_list<T> list);
 
 	T& at(size_t index);
 
@@ -23,32 +20,30 @@ public:
 
 	T& back();
 
-	T* data();
+	T* data() const;
 
-	bool empty();
+	bool empty() const;
 
-	size_t size();
+	size_t size() const;
 
-	size_t max_size();
+	size_t max_size() const;
 
 	void fill(const T& value);
 
 	void swap(array<T, N>& other);
+
+
+private:
+	T arr[N];
 };
 
 
 template<typename T, size_t N>
-array<T, N>::array(T arg1, ...) {
-	va_list args;
-	va_start(args, arg1);
-
-	arr[0] = arg1;
-
-	for (size_t i = 1; i < N; ++i) {
-		arr[i] = va_arg(args, T);
+array<T, N>::array(std::initializer_list<T> list) {
+	auto  itList = list.begin();
+	for (size_t i = 0; i < N; ++i) {
+		arr[i] = *(itList++);
 	}
-
-	va_end(args);
 }
 
 template<typename T, size_t N>
@@ -75,24 +70,24 @@ T& array<T, N>::back() {
 }
 
 template<typename T, size_t N>
-T* array<T, N>::data() {
+T* array<T, N>::data() const {
 	if (N == 0)
 		return nullptr;
 	return arr;
 }
 
 template<typename T, size_t N>
-bool array<T, N>::empty() {
+bool array<T, N>::empty() const {
 	return N == 0 ? true : false;
 }
 
 template<typename T, size_t N>
-size_t array<T, N>::size() {
+size_t array<T, N>::size() const {
 	return N;
 }
 
 template<typename T, size_t N>
-size_t array<T, N>::max_size() {
+size_t array<T, N>::max_size() const {
 	return N;
 }
 
@@ -115,7 +110,7 @@ void array<T, N>::swap(array<T, N>& other) {
 template<typename T, size_t N>
 array<T, N>& array<T, N>::operator=(array<T, N>& other) {
 	for (size_t i = 0; i < N; ++i) {
-		arr[i] = other.at[i];
+		arr[i] = other.at(i);
 	}
 	return *this;
 }
